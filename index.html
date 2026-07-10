@@ -80,11 +80,7 @@
             transition: transform 0.3s ease;
         }
 
-        .luxury-card:hover {
-            transform: translateY(-50deg) rotateX(2deg);
-        }
-
-        /* Sparrow Logo (Geometric Bird Design inspired by Twitter/X legacy shapes) */
+        /* Sparrow Logo */
         .logo-container {
             width: 90px;
             height: 90px;
@@ -99,7 +95,6 @@
             animation: pulseGlow 3s ease-in-out infinite;
         }
 
-        /* SVG Sparrow Silhouette path */
         .sparrow-icon {
             width: 50px;
             height: 50px;
@@ -129,7 +124,6 @@
             margin-bottom: 20px;
         }
 
-        /* Dynamic Progress/Mining Display Buttons */
         .btn-mine {
             background: linear-gradient(135deg, #ffd700 0%, #ffaa00 50%, #b76e79 100%);
             color: #120205;
@@ -144,11 +138,6 @@
             letter-spacing: 1px;
             box-shadow: 0 5px 20px rgba(255, 170, 0, 0.4);
             transition: all 0.3s ease;
-        }
-
-        .btn-mine:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(255, 170, 0, 0.6);
         }
 
         .btn-mine:disabled {
@@ -214,11 +203,6 @@
             transition: border 0.3s;
         }
 
-        .tx-input:focus {
-            border-color: var(--luxury-gold);
-            box-shadow: 0 0 8px rgba(255, 215, 0, 0.2);
-        }
-
         .btn-send {
             background: linear-gradient(135deg, #800020 0%, #b76e79 100%);
             color: white;
@@ -230,14 +214,9 @@
             cursor: pointer;
             text-transform: uppercase;
             letter-spacing: 1px;
-            transition: background 0.3s;
         }
 
-        .btn-send:hover {
-            background: linear-gradient(135deg, #990026 0%, #c9828d 100%);
-        }
-
-        /* Customer Service Footer Support elements */
+        /* Customer Service Support Elements */
         .customer-service-panel {
             background: #1a0408;
             border-top: 3px solid var(--luxury-gold);
@@ -275,19 +254,6 @@
             border-radius: 8px;
             background: rgba(255,255,255,0.03);
             border: 1px solid rgba(183, 110, 121, 0.2);
-            transition: all 0.3s;
-        }
-
-        .cs-link.whatsapp:hover {
-            background: #25d366;
-            color: #fff;
-            border-color: #25d366;
-        }
-
-        .cs-link.email:hover {
-            background: #ea4335;
-            color: #fff;
-            border-color: #ea4335;
         }
     </style>
 </head>
@@ -312,27 +278,24 @@
 
         <div class="transfer-panel">
             <div class="panel-title"><i class="fa-solid fa-paper-plane"></i> Secure Token Ledger Transfer</div>
-            
             <div class="input-group">
                 <i class="fa-solid fa-wallet"></i>
                 <input type="text" class="tx-input" id="recipient-address" placeholder="Destination Wallet Address">
             </div>
-            
             <div class="input-group">
                 <i class="fa-solid fa-coins"></i>
                 <input type="number" class="tx-input" id="transfer-amount" placeholder="Amount (MST)" min="1">
             </div>
-
             <button class="btn-send" onclick="processTransferRequest()">Execute Secure Transfer</button>
         </div>
 
         <div class="customer-service-panel">
             <div class="cs-title">DeMatrix Customer Node Support</div>
             <div class="cs-channels">
-                <a href="https://wa.me/2349068053574" target="_blank" class="cs-link whatsapp">
+                <a href="https://wa.me/2349068053574" target="_blank" class="cs-link" style="color:#25d366;">
                     <i class="fa-brands fa-whatsapp" style="font-size: 1.2rem;"></i> WhatsApp Support
                 </a>
-                <a href="mailto:albertgmartins17@gmail.com?subject=MST%20Mining%20Node%20Inquiry" class="cs-link email">
+                <a href="mailto:albertgmartins17@gmail.com?subject=MST%20Mining%20Node%20Inquiry" class="cs-link" style="color:#ea4335;">
                     <i class="fa-solid fa-envelope" style="font-size: 1.1rem;"></i> Email Node
                 </a>
             </div>
@@ -340,49 +303,49 @@
     </div>
 
     <script>
-        // Set persistent parameters globally
+        // =============================================================
+        // HERE IS EXACTLY WHERE THE MONETAG REGISTRATION SCRIPT LIVES!
+        // =============================================================
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('Monetag Active scope: ', reg.scope))
+                    .catch(err => console.log('Monetag Worker synchronization failed: ', err));
+            });
+        }
+
+        // --- Core Mining System Settings ---
         const MINING_REWARD = 50.00;
-        const MINING_DURATION_MS = 30 * 60 * 1000; // 30 mins
+        const MINING_DURATION_MS = 30 * 60 * 1000; 
 
         let currentBalance = 0.00;
         let timerInterval = null;
 
-        // On boot loading execution context layers
         window.addEventListener('load', () => {
             initAppState();
         });
 
         function initAppState() {
-            // Restore persistent structural financial ledger metrics
             const storedBalance = localStorage.getItem('mst_balance');
             if (storedBalance !== null) {
                 currentBalance = parseFloat(storedBalance);
                 updateBalanceUI();
             }
 
-            // Restore absolute time target stamps
             const storedTarget = localStorage.getItem('mst_timer_target');
             if (storedTarget !== null) {
                 const targetTime = parseInt(storedTarget, 10);
-                const currentTime = Date.now();
-
-                if (currentTime < targetTime) {
-                    // Lock mining button and resume running cycle down steps
+                if (Date.now() < targetTime) {
                     engageTimerTracking(targetTime);
                 } else {
-                    // System cleared time boundaries while offline
                     clearTimerState();
                 }
             }
         }
 
         function startMiningCycle() {
-            const currentTime = Date.now();
-            const absoluteTargetTime = currentTime + MINING_DURATION_MS;
-
-            // Commit timestamps irreversibly to persistent browser hardware storage layers
+            const absoluteTargetTime = Date.now() + MINING_DURATION_MS;
             localStorage.setItem('mst_timer_target', absoluteTargetTime);
-            
             engageTimerTracking(absoluteTargetTime);
         }
 
@@ -394,11 +357,9 @@
             if (timerInterval) clearInterval(timerInterval);
 
             function updateCounter() {
-                const now = Date.now();
-                const operationalRemainingDelta = targetTime - now;
+                const operationalRemainingDelta = targetTime - Date.now();
 
                 if (operationalRemainingDelta <= 0) {
-                    // Cycle complete - execute token allocation parameters securely
                     clearInterval(timerInterval);
                     currentBalance += MINING_REWARD;
                     localStorage.setItem('mst_balance', currentBalance);
@@ -406,11 +367,9 @@
                     clearTimerState();
                     alert("System Notice: 50.00 MST securely minted to wallet ledger keys successfully.");
                 } else {
-                    // Calculate visual clock units
                     const minutes = Math.floor((operationalRemainingDelta % (1000 * 60 * 60)) / (1000 * 60));
                     const seconds = Math.floor((operationalRemainingDelta % (1000 * 60)) / 1000);
                     
-                    // Zero pad output
                     const displayMin = minutes < 10 ? '0' + minutes : minutes;
                     const displaySec = seconds < 10 ? '0' + seconds : seconds;
 
@@ -447,89 +406,23 @@
                 alert("Transaction Fault: Valid destination node wallet key required.");
                 return;
             }
-
             if (isNaN(amount) || amount <= 0) {
                 alert("Transaction Fault: Input numeric vectors above 0.00 units.");
                 return;
             }
-
             if (amount > currentBalance) {
                 alert(`Ledger Validation Error: Insufficient operational capital balance. Your profile holds ${currentBalance.toFixed(2)} MST.`);
                 return;
             }
 
-            // Deduct from balance safely and persist
             currentBalance -= amount;
             localStorage.setItem('mst_balance', currentBalance);
             updateBalanceUI();
 
-            // Clear operational field assets
             amountInput.value = '';
             document.getElementById('recipient-address').value = '';
-
             alert(`Ledger Dispatched: ${amount.toFixed(2)} MST successfully broadcasted and deducted from balance.`);
         }
     </script>
-<!-- BEGIN AADS AD UNIT 2447575 -->
-
-<div style="position: absolute; z-index: 99999">
-      <input autocomplete="off" type="checkbox" id="aadsstickymrf17cdz" hidden />
-      <div style="padding-top: 0; padding-bottom: auto;">
-        <div style="width:100%;height:auto;position:fixed;text-align:center;font-size:0;bottom:0;left:0;right:0;margin:auto">
-          <label for="aadsstickymrf17cdz" style="top: 50%;transform: translateY(-50%);right:24px;; position: absolute;border-radius: 4px; background: rgba(248, 248, 249, 0.70); padding: 4px;z-index: 99999;cursor:pointer">
-            <svg fill="#000000" height="16px" width="16px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 490 490">
-              <polygon points="456.851,0 245,212.564 33.149,0 0.708,32.337 212.669,245.004 0.708,457.678 33.149,490 245,277.443 456.851,490 489.292,457.678 277.331,245.004 489.292,32.337 "/>
-            </svg>
-          </label>
-          <div id="frame" style="width: 100%;margin: auto;position: relative; z-index: 99998;">
-                          <div style="width: 70%;margin:auto;text-align:left;position: absolute;left: 0;right: 0; top:-24px">
-                            <a style="display:inline-block;font-size: 13px;color: #263238;padding: 4px 10px;background: #F8F8F9;text-decoration: none; border-radius: 4px 4px 0 0;"
-                              id="frame-link"
-                              target="_blank"
-                              href="https://aads.com/campaigns/new?source_id=2447575&source_type=ad_unit&partner=2447575">
-                              Advertise here
-                            </a>
-                          </div>
-                        <iframe data-aa=2447575 src=//acceptable.a-ads.com/2447575/?size=Adaptive style='border:0; padding:0; width:70%; height:auto; overflow:hidden; margin: auto'></iframe>
-                    </div>
-        </div>
-        <style>
-      #aadsstickymrf17cdz:checked + div {
-        display: none;
-      }
-    </style>
-    </div></div>
- <!-- BEGIN AADS AD UNIT 2447575 -->
-
-<div style="position: absolute; z-index: 99999">
-      <input autocomplete="off" type="checkbox" id="aadsstickymrf17cdz" hidden />
-      <div style="padding-top: 0; padding-bottom: auto;">
-        <div style="width:100%;height:auto;position:fixed;text-align:center;font-size:0;bottom:0;left:0;right:0;margin:auto">
-          <label for="aadsstickymrf17cdz" style="top: 50%;transform: translateY(-50%);right:24px;; position: absolute;border-radius: 4px; background: rgba(248, 248, 249, 0.70); padding: 4px;z-index: 99999;cursor:pointer">
-            <svg fill="#000000" height="16px" width="16px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 490 490">
-              <polygon points="456.851,0 245,212.564 33.149,0 0.708,32.337 212.669,245.004 0.708,457.678 33.149,490 245,277.443 456.851,490 489.292,457.678 277.331,245.004 489.292,32.337 "/>
-            </svg>
-          </label>
-          <div id="frame" style="width: 100%;margin: auto;position: relative; z-index: 99998;">
-                          <div style="width: 70%;margin:auto;text-align:left;position: absolute;left: 0;right: 0; top:-24px">
-                            <a style="display:inline-block;font-size: 13px;color: #263238;padding: 4px 10px;background: #F8F8F9;text-decoration: none; border-radius: 4px 4px 0 0;"
-                              id="frame-link"
-                              target="_blank"
-                              href="https://aads.com/campaigns/new?source_id=2447575&source_type=ad_unit&partner=2447575">
-                              Advertise here
-                            </a>
-                          </div>
-                        <iframe data-aa=2447575 src=//acceptable.a-ads.com/2447575/?size=Adaptive style='border:0; padding:0; width:70%; height:auto; overflow:hidden; margin: auto'></iframe>
-                    </div>
-        </div>
-        <style>
-      #aadsstickymrf17cdz:checked + div {
-        display: none;
-      }
-    </style>
-    </div></div>
-
-<!-- END AADS AD UNIT 2447575 -->
-    
 </body>
 </html>
