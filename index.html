@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Martins Super Tokens (MST) Miner</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <style>
+        :root {
+            --bg-dark: #120205;
+            --luxury-gold: #ffd700;
+            --rose-gold: #b76e79;
+            --glow-gold: #ffaa00;
+            --accent-red: #800020;
+            --text-light: #fffaf0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: radial-gradient(circle at center, #2a0810 0%, var(--bg-dark) 100%);
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            color: var(--text-light);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 20px 15px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        /* Luxurious Dynamic Colorful Header */
+        .dematrix-header {
+            font-size: 1.8rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-align: center;
+            background: linear-gradient(45deg, #ffd700, #ffaa00, #ff3366, #ff007f, #00ffff, #ffd700);
+            background-size: 400% 400%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: luxuryGradient 8s ease infinite;
+            filter: drop-shadow(0 2px 10px rgba(255, 215, 0, 0.3));
+        }
+
+        @keyframes luxuryGradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* 3D Dashboard Card */
+        .luxury-card {
+            background: linear-gradient(135deg, rgba(40, 10, 15, 0.85) 0%, rgba(20, 3, 5, 0.95) 100%);
+            border: 2px solid var(--rose-gold);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.7), 
+                        inset 0 0 20px rgba(255, 215, 0, 0.1),
+                        0 0 15px rgba(183, 110, 121, 0.2);
+            border-radius: 24px;
+            width: 100%;
+            padding: 25px;
+            text-align: center;
+            transform-style: preserve-3d;
+            perspective: 1000px;
+            transition: transform 0.3s ease;
+        }
+
+        .luxury-card:hover {
+            transform: translateY(-50deg) rotateX(2deg);
+        }
+
+        /* Sparrow Logo (Geometric Bird Design inspired by Twitter/X legacy shapes) */
+        .logo-container {
+            width: 90px;
+            height: 90px;
+            background: radial-gradient(circle, #3a0d16 0%, #1a0307 100%);
+            border: 2px solid var(--luxury-gold);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px auto;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+            animation: pulseGlow 3s ease-in-out infinite;
+        }
+
+        /* SVG Sparrow Silhouette path */
+        .sparrow-icon {
+            width: 50px;
+            height: 50px;
+            fill: var(--luxury-gold);
+            filter: drop-shadow(0 0 5px var(--glow-gold));
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 15px rgba(255, 215, 0, 0.3); transform: scale(1); }
+            50% { box-shadow: 0 0 30px rgba(255, 215, 0, 0.6); transform: scale(1.03); }
+        }
+
+        .balance-label {
+            font-size: 0.8rem;
+            color: var(--rose-gold);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+        }
+
+        .balance-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #ffffff;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.3), 0 0 20px var(--glow-gold);
+            font-family: monospace;
+            margin-bottom: 20px;
+        }
+
+        /* Dynamic Progress/Mining Display Buttons */
+        .btn-mine {
+            background: linear-gradient(135deg, #ffd700 0%, #ffaa00 50%, #b76e79 100%);
+            color: #120205;
+            border: none;
+            width: 100%;
+            padding: 16px;
+            font-size: 1.1rem;
+            font-weight: 800;
+            border-radius: 14px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 5px 20px rgba(255, 170, 0, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .btn-mine:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 170, 0, 0.6);
+        }
+
+        .btn-mine:disabled {
+            background: #2a181c;
+            color: #6e5559;
+            border: 1px solid rgba(183, 110, 121, 0.3);
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        .timer-display {
+            font-size: 1.2rem;
+            margin-top: 15px;
+            font-weight: bold;
+            color: var(--rose-gold);
+            letter-spacing: 1px;
+        }
+
+        /* Transaction / Transfer Panel */
+        .transfer-panel {
+            background: rgba(25, 5, 10, 0.8);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            width: 100%;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        }
+
+        .panel-title {
+            font-size: 0.9rem;
+            color: var(--luxury-gold);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .input-group {
+            margin-bottom: 12px;
+            position: relative;
+        }
+
+        .input-group i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--rose-gold);
+        }
+
+        .tx-input {
+            width: 100%;
+            background: #0d0103;
+            border: 1px solid var(--rose-gold);
+            border-radius: 10px;
+            padding: 12px 12px 12px 38px;
+            color: #fff;
+            font-family: inherit;
+            outline: none;
+            transition: border 0.3s;
+        }
+
+        .tx-input:focus {
+            border-color: var(--luxury-gold);
+            box-shadow: 0 0 8px rgba(255, 215, 0, 0.2);
+        }
+
+        .btn-send {
+            background: linear-gradient(135deg, #800020 0%, #b76e79 100%);
+            color: white;
+            border: 1px solid var(--luxury-gold);
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: background 0.3s;
+        }
+
+        .btn-send:hover {
+            background: linear-gradient(135deg, #990026 0%, #c9828d 100%);
+        }
+
+        /* Customer Service Footer Support elements */
+        .customer-service-panel {
+            background: #1a0408;
+            border-top: 3px solid var(--luxury-gold);
+            width: 100%;
+            border-radius: 16px;
+            padding: 15px;
+            margin-top: 10px;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.4);
+        }
+
+        .cs-title {
+            font-size: 0.8rem;
+            color: var(--rose-gold);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .cs-channels {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .cs-link {
+            text-decoration: none;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            padding: 8px 12px;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(183, 110, 121, 0.2);
+            transition: all 0.3s;
+        }
+
+        .cs-link.whatsapp:hover {
+            background: #25d366;
+            color: #fff;
+            border-color: #25d366;
+        }
+
+        .cs-link.email:hover {
+            background: #ea4335;
+            color: #fff;
+            border-color: #ea4335;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="dematrix-header">Martins Super Games</div>
+
+        <div class="luxury-card">
+            <div class="logo-container">
+                <svg class="sparrow-icon" viewBox="0 0 24 24">
+                    <path d="M22 5.08c-.77.34-1.6.57-2.47.68a4.32 4.32 0 0 0 1.89-2.38 8.64 8.64 0 0 1-2.74 1.05 4.31 4.31 0 0 0-7.35 3.93A12.24 12.24 0 0 1 2.5 3.79a4.31 4.31 0 0 0 1.33 5.76 4.28 4.28 0 0 1-1.95-.54v.05a4.31 4.31 0 0 0 3.46 4.23 4.3 4.3 0 0 1-1.94.07 4.31 4.31 0 0 0 4.02 3 8.66 8.66 0 0 1-5.36 1.85c-.35 0-.69-.02-1.04-.06a12.21 12.21 0 0 0 6.62 1.94c7.95 0 12.29-6.58 12.29-12.29 0-.19 0-.37-.01-.56A8.79 8.79 0 0 0 22 5.08z"/>
+                </svg>
+            </div>
+
+            <div class="balance-label">Available Node Balance</div>
+            <div class="balance-value" id="balance-display">0.00 MST</div>
+
+            <button class="btn-mine" id="mine-btn" onclick="startMiningCycle()">Initialize Mining Link</button>
+            <div class="timer-display" id="timer-display">Node Status: Ready</div>
+        </div>
+
+        <div class="transfer-panel">
+            <div class="panel-title"><i class="fa-solid fa-paper-plane"></i> Secure Token Ledger Transfer</div>
+            
+            <div class="input-group">
+                <i class="fa-solid fa-wallet"></i>
+                <input type="text" class="tx-input" id="recipient-address" placeholder="Destination Wallet Address">
+            </div>
+            
+            <div class="input-group">
+                <i class="fa-solid fa-coins"></i>
+                <input type="number" class="tx-input" id="transfer-amount" placeholder="Amount (MST)" min="1">
+            </div>
+
+            <button class="btn-send" onclick="processTransferRequest()">Execute Secure Transfer</button>
+        </div>
+
+        <div class="customer-service-panel">
+            <div class="cs-title">DeMatrix Customer Node Support</div>
+            <div class="cs-channels">
+                <a href="https://wa.me/2349068053574" target="_blank" class="cs-link whatsapp">
+                    <i class="fa-brands fa-whatsapp" style="font-size: 1.2rem;"></i> WhatsApp Support
+                </a>
+                <a href="mailto:albertgmartins17@gmail.com?subject=MST%20Mining%20Node%20Inquiry" class="cs-link email">
+                    <i class="fa-solid fa-envelope" style="font-size: 1.1rem;"></i> Email Node
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Set persistent parameters globally
+        const MINING_REWARD = 50.00;
+        const MINING_DURATION_MS = 30 * 60 * 1000; // 30 mins
+
+        let currentBalance = 0.00;
+        let timerInterval = null;
+
+        // On boot loading execution context layers
+        window.addEventListener('load', () => {
+            initAppState();
+        });
+
+        function initAppState() {
+            // Restore persistent structural financial ledger metrics
+            const storedBalance = localStorage.getItem('mst_balance');
+            if (storedBalance !== null) {
+                currentBalance = parseFloat(storedBalance);
+                updateBalanceUI();
+            }
+
+            // Restore absolute time target stamps
+            const storedTarget = localStorage.getItem('mst_timer_target');
+            if (storedTarget !== null) {
+                const targetTime = parseInt(storedTarget, 10);
+                const currentTime = Date.now();
+
+                if (currentTime < targetTime) {
+                    // Lock mining button and resume running cycle down steps
+                    engageTimerTracking(targetTime);
+                } else {
+                    // System cleared time boundaries while offline
+                    clearTimerState();
+                }
+            }
+        }
+
+        function startMiningCycle() {
+            const currentTime = Date.now();
+            const absoluteTargetTime = currentTime + MINING_DURATION_MS;
+
+            // Commit timestamps irreversibly to persistent browser hardware storage layers
+            localStorage.setItem('mst_timer_target', absoluteTargetTime);
+            
+            engageTimerTracking(absoluteTargetTime);
+        }
+
+        function engageTimerTracking(targetTime) {
+            const mineBtn = document.getElementById('mine-btn');
+            const timerDisplay = document.getElementById('timer-display');
+            mineBtn.disabled = true;
+
+            if (timerInterval) clearInterval(timerInterval);
+
+            function updateCounter() {
+                const now = Date.now();
+                const operationalRemainingDelta = targetTime - now;
+
+                if (operationalRemainingDelta <= 0) {
+                    // Cycle complete - execute token allocation parameters securely
+                    clearInterval(timerInterval);
+                    currentBalance += MINING_REWARD;
+                    localStorage.setItem('mst_balance', currentBalance);
+                    updateBalanceUI();
+                    clearTimerState();
+                    alert("System Notice: 50.00 MST securely minted to wallet ledger keys successfully.");
+                } else {
+                    // Calculate visual clock units
+                    const minutes = Math.floor((operationalRemainingDelta % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((operationalRemainingDelta % (1000 * 60)) / 1000);
+                    
+                    // Zero pad output
+                    const displayMin = minutes < 10 ? '0' + minutes : minutes;
+                    const displaySec = seconds < 10 ? '0' + seconds : seconds;
+
+                    timerDisplay.innerText = `Cooling Down: ${displayMin}:${displaySec}`;
+                    mineBtn.innerText = `Mining Node Processing...`;
+                }
+            }
+
+            updateCounter();
+            timerInterval = setInterval(updateCounter, 1000);
+        }
+
+        function clearTimerState() {
+            const mineBtn = document.getElementById('mine-btn');
+            const timerDisplay = document.getElementById('timer-display');
+            
+            localStorage.removeItem('mst_timer_target');
+            mineBtn.disabled = false;
+            mineBtn.innerText = "Initialize Mining Link";
+            timerDisplay.innerText = "Node Status: Ready";
+            if (timerInterval) clearInterval(timerInterval);
+        }
+
+        function updateBalanceUI() {
+            document.getElementById('balance-display').innerText = `${currentBalance.toFixed(2)} MST`;
+        }
+
+        function processTransferRequest() {
+            const recipient = document.getElementById('recipient-address').value.trim();
+            const amountInput = document.getElementById('transfer-amount');
+            const amount = parseFloat(amountInput.value);
+
+            if (!recipient) {
+                alert("Transaction Fault: Valid destination node wallet key required.");
+                return;
+            }
+
+            if (isNaN(amount) || amount <= 0) {
+                alert("Transaction Fault: Input numeric vectors above 0.00 units.");
+                return;
+            }
+
+            if (amount > currentBalance) {
+                alert(`Ledger Validation Error: Insufficient operational capital balance. Your profile holds ${currentBalance.toFixed(2)} MST.`);
+                return;
+            }
+
+            // Deduct from balance safely and persist
+            currentBalance -= amount;
+            localStorage.setItem('mst_balance', currentBalance);
+            updateBalanceUI();
+
+            // Clear operational field assets
+            amountInput.value = '';
+            document.getElementById('recipient-address').value = '';
+
+            alert(`Ledger Dispatched: ${amount.toFixed(2)} MST successfully broadcasted and deducted from balance.`);
+        }
+    </script>
+</body>
+</html>
