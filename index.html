@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Martins DeMatrix - MST Miner & Wallet</title>
+    <!-- FontAwesome Icons for Premium Look -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle, #2a0000 0%, #110000 100%);
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px 10px;
+        }
+
+        .master-wrapper {
+            width: 100%;
+            max-width: 480px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .miner-card {
+            background: rgba(40, 0, 0, 0.65);
+            border: 2px solid #d4af37;
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.15), inset 0 0 15px rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+        }
+
+        .brand-header {
+            margin-bottom: 20px;
+        }
+
+        .brand-logo {
+            font-size: 45px;
+            color: #d4af37;
+            text-shadow: 0 0 15px rgba(212, 175, 55, 0.6);
+            margin-bottom: 5px;
+            animation: pulseLogo 3s infinite ease-in-out;
+        }
+
+        h1 {
+            font-size: 22px;
+            color: #ffffff;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        h1 span {
+            color: #d4af37;
+        }
+
+        .balance-display {
+            background: linear-gradient(135deg, #4a0000 0%, #220000 100%);
+            border: 1px solid rgba(212, 175, 55, 0.4);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .balance-display::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(to right, transparent, rgba(212, 175, 55, 0.15), transparent);
+            transform: skewX(-25deg);
+            animation: shine 4s infinite linear;
+        }
+
+        .balance-label {
+            font-size: 11px;
+            color: #b3b3b3;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+        }
+
+        .balance-amount {
+            font-size: 32px;
+            font-weight: bold;
+            color: #d4af37;
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+        }
+
+        .timer-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 4px dashed rgba(212, 175, 55, 0.3);
+            margin: 0 auto 15px auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .timer-circle.active {
+            border-color: #d4af37;
+            animation: rotateBorder 20s linear infinite;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.2);
+        }
+
+        .timer-display {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        .status-text {
+            font-size: 13px;
+            color: #e0e0e0;
+            font-style: italic;
+            margin-bottom: 20px;
+        }
+
+        .action-btn {
+            background: linear-gradient(135deg, #8b0000 0%, #4a0000 100%);
+            color: #d4af37;
+            border: 2px solid #d4af37;
+            padding: 14px 28px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            width: 100%;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .action-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(212, 175, 55, 0.3);
+            background: linear-gradient(135deg, #a30000 0%, #5c0000 100%);
+        }
+
+        .action-btn:disabled {
+            background: #222;
+            border-color: #555;
+            color: #777;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        /* Panels Style */
+        .section-title {
+            font-size: 14px;
+            color: #d4af37;
+            text-align: left;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            border-left: 3px solid #d4af37;
+            padding-left: 8px;
+        }
+
+        .input-group {
+            margin-bottom: 12px;
+            text-align: left;
+        }
+
+        .input-group label {
+            font-size: 11px;
+            color: #b3b3b3;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .input-group input {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 8px;
+            padding: 10px 12px;
+            color: #fff;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #d4af37;
+            box-shadow: 0 0 8px rgba(212, 175, 55, 0.2);
+        }
+
+        /* Support Grid */
+        .support-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .support-link {
+            background: rgba(20, 0, 0, 0.4);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 10px;
+            padding: 12px;
+            color: #fff;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 13px;
+            transition: 0.3s;
+        }
+
+        .support-link:hover {
+            border-color: #d4af37;
+            background: rgba(74, 0, 0, 0.3);
+        }
+
+        .support-link i {
+            color: #d4af37;
+            font-size: 16px;
+        }
+
+        @keyframes pulseLogo {
+            0%, 100% { transform: scale(1); opacity: 0.9; }
+            50% { transform: scale(1.03); opacity: 1; text-shadow: 0 0 25px rgba(212, 175, 55, 0.6); }
+        }
+
+        @keyframes shine {
+            0% { left: -100%; }
+            20% { left: 100%; }
+            100% { left: 100%; }
+        }
+
+        @keyframes rotateBorder {
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="master-wrapper">
+        
+        <!-- Main Mining Engine -->
+        <div class="miner-card">
+            <div class="brand-header">
+                <div class="brand-logo"><i class="fas fa-dove"></i></div>
+                <h1>Martins <span>DeMatrix</span></h1>
+            </div>
+
+            <div class="balance-display">
+                <div class="balance-label">Available MST Balance</div>
+                <div class="balance-amount" id="balanceDisplay">0.000000</div>
+            </div>
+
+            <div class="status-container">
+                <div class="timer-circle" id="timerCircle">
+                    <div class="timer-display" id="countdownDisplay">00:00</div>
+                </div>
+                <div class="status-text" id="statusText">System Idle. Ready to mine.</div>
+            </div>
+
+            <button class="action-btn" id="miningBtn" onclick="startMiningProcess()">
+                <i class="fas fa-hammer"></i> Start Mining (Watch Ad)
+            </button>
+        </div>
+
+        <!-- Token Transfer Terminal -->
+        <div class="miner-card">
+            <div class="section-title">Transfer MST Tokens</div>
+            
+            <div class="input-group">
+                <label>Recipient Wallet Address</label>
+                <input type="text" id="recipientAddr" placeholder="0x... or User ID">
+            </div>
+
+            <div class="input-group">
+                <label>Amount (MST)</label>
+                <input type="number" id="transferAmount" step="0.001" placeholder="0.000">
+            </div>
+
+            <button class="action-btn" style="padding: 10px 20px; font-size: 14px;" onclick="executeMstTransfer()">
+                <i class="fas fa-paper-plane"></i> Confirm Transfer
+            </button>
+        </div>
+
+        <!-- Luxury Customer Support Hub -->
+        <div class="miner-card" style="padding: 20px;">
+            <div class="section-title" style="margin-bottom: 12px;">Customer Support</div>
+            <div class="support-grid">
+                <!-- WhatsApp Integration -->
+                <a href="https://wa.me/2349068053574?text=Hello%20Martins%20DeMatrix%20Support,%20I%20need%20assistance%20with%20my%20MST%20Miner." target="_blank" class="support-link">
+                    <i class="fab fa-whatsapp"></i> WhatsApp Help
+                </a>
+                
+                <!-- Email Integration -->
+                <a href="mailto:albertgmartins17@gmail.com?subject=MST%20Miner%20Support%20Inquiry" class="support-link">
+                    <i class="far fa-envelope"></i> Email Agent
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Core Logic State Data
+        let balance = parseFloat(localStorage.getItem('mst_balance')) || 0.000000;
+        let cooldownTime = parseInt(localStorage.getItem('mst_cooldown')) || 0;
+        let countdownInterval;
+
+        const balanceDisplay = document.getElementById('balanceDisplay');
+        const countdownDisplay = document.getElementById('countdownDisplay');
+        const statusText = document.getElementById('statusText');
+        const miningBtn = document.getElementById('miningBtn');
+        const timerCircle = document.getElementById('timerCircle');
+
+        window.onload = function() {
+            updateBalanceUI();
+            checkExistingCooldown();
+        };
+
+        function updateBalanceUI() {
+            balanceDisplay.innerText = balance.toFixed(6) + " MST";
+        }
+
+        function checkExistingCooldown() {
+            let now = Math.floor(Date.now() / 1000);
+            if (cooldownTime > now) {
+                let remaining = cooldownTime - now;
+                triggerCooldownMode(remaining);
+            }
+        }
+
+        function startMiningProcess() {
+            // Launch Monetag ad route seamlessly
+            window.open("https://omg10.com/4/11268369", "_blank");
+
+            miningBtn.disabled = true;
+            timerCircle.classList.add('active');
+            statusText.innerText = "Extracting blocks from server hashes...";
+            
+            setTimeout(() => {
+                // Generate randomized reward payload block
+                let reward = parseFloat((Math.random() * (0.05 - 0.01) + 0.01).toFixed(6));
+                balance += reward;
+                
+                localStorage.setItem('mst_balance', balance.toString());
+                updateBalanceUI();
+
+                let targetEpoch = Math.floor(Date.now() / 1000) + 60;
+                localStorage.setItem('mst_cooldown', targetEpoch.toString());
+
+                timerCircle.classList.remove('active');
+                triggerCooldownMode(60);
+            }, 3000);
+        }
+
+        function triggerCooldownMode(duration) {
+            miningBtn.disabled = true;
+            statusText.innerText = "Cooling down system grid cores...";
+            
+            let secondsLeft = duration;
+            updateCountdownText(secondsLeft);
+
+            clearInterval(countdownInterval);
+            countdownInterval = setInterval(() => {
+                secondsLeft--;
+                updateCountdownText(secondsLeft);
+
+                if (secondsLeft <= 0) {
+                    clearInterval(countdownInterval);
+                    resetMinerToReadyState();
+                }
+            }, 1000);
+        }
+
+        function updateCountdownText(seconds) {
+            let mins = Math.floor(seconds / 60);
+            let secs = seconds % 60;
+            countdownDisplay.innerText = 
+                `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function resetMinerToReadyState() {
+            localStorage.removeItem('mst_cooldown');
+            miningBtn.disabled = false;
+            countdownDisplay.innerText = "00:00";
+            statusText.innerText = "System Idle. Ready to mine.";
+        }
+
+        // Wallet Balance Transfer Functionality
+        function executeMstTransfer() {
+            const addrInput = document.getElementById('recipientAddr').value.trim();
+            const amtInput = parseFloat(document.getElementById('transferAmount').value);
+
+            if (!addrInput) {
+                alert("Please enter a valid recipient wallet address.");
+                return;
+            }
+            if (isNaN(amtInput) || amtInput <= 0) {
+                alert("Please enter a valid transfer amount greater than 0.");
+                return;
+            }
+            if (amtInput > balance) {
+                alert("Insufficient MST balance to process this transfer.");
+                return;
+            }
+
+            // Deduct funds and commit structural update
+            balance -= amtInput;
+            localStorage.setItem('mst_balance', balance.toString());
+            updateBalanceUI();
+            
+            alert(`Successfully transferred ${amtInput.toFixed(6)} MST to address: ${addrInput}`);
+            
+            // Clear inputs
+            document.getElementById('recipientAddr').value = "";
+            document.getElementById('transferAmount').value = "";
+        }
+    </script>
+</body>
+</html>
